@@ -16,6 +16,8 @@ Table of Contents
 
 -   [Server Details](#server-details)
 
+    -   [How to Use](#how-to-use)
+
 -   [License](#license)
 
 Author
@@ -52,6 +54,8 @@ Compiling
 
 Server Details
 --------------
+
+### How to Use
 
 To use this plugin after it has been compiled, simply load the plugin via the configuration file.
 
