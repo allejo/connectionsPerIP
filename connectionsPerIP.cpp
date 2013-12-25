@@ -29,7 +29,11 @@ public:
     virtual void Event (bz_EventData *eventData);
     virtual void Cleanup (void);
 
+    // Store all the current IPs on the server in a map along with their count
+    // of connections
     std::map <std::string, int> currentIPs;
+
+    // The number of maximum connections per IP
     int maxConnectionsPerIP;
 };
 
@@ -39,7 +43,6 @@ void ConnectionsPerIP::Init (const char* commandLine)
 {
     // Register our events with Register()
     Register(bz_eAllowPlayer);
-    Register(bz_ePlayerJoinEvent);
     Register(bz_ePlayerPartEvent);
 
     // Check to see if the command line has a parameter so we can change
@@ -53,6 +56,8 @@ void ConnectionsPerIP::Init (const char* commandLine)
     {
         maxConnectionsPerIP = 2;
     }
+
+    bz_debugMessagef(2, "DEBUG :: Connections Per IP :: Maximum number of connections allowed set to: %i", maxConnectionsPerIP);
 }
 
 void ConnectionsPerIP::Cleanup (void)
@@ -68,25 +73,24 @@ void ConnectionsPerIP::Event(bz_EventData *eventData)
         {
             bz_AllowPlayerEventData_V1* allowPlayerData = (bz_AllowPlayerEventData_V1*)eventData;
 
-            if (currentIPs[allowPlayerData->ipAddress] >= maxConnectionsPerIP)
+            // Check if we have their IP recorded
+            if (currentIPs.find(allowPlayerData->ipAddress.c_str()) == currentIPs.end())
             {
-                allowPlayerData->allow = false;
-                allowPlayerData->reason = "You have exceeded the maximum connections allowed to this server per IP address.";
-            }
-        }
-        break;
-
-        case bz_ePlayerJoinEvent: // This event is called each time a player joins the game
-        {
-            bz_PlayerJoinPartEventData_V1* joinData = (bz_PlayerJoinPartEventData_V1*)eventData;
-
-            if (currentIPs.find(joinData->record->ipAddress.c_str()) == grade_list.end())
-            {
-                currentIPs[joinData->record->ipAddress] = 1;
+                // If it's the first time an IP has joined, set their connection count to 1
+                currentIPs[allowPlayerData->ipAddress.c_str()] = 1;
             }
             else
             {
-                currentIPs[joinData->record->ipAddress]++;
+                // If the IP is found in the list, then that means they already have at least
+                // one connection, so simply increment their connection count
+                currentIPs[allowPlayerData->ipAddress.c_str()]++;
+            }
+
+            // If an IP has reached it's limit of connections, do not allow them to join any more
+            if (currentIPs[allowPlayerData->ipAddress.c_str()] >= maxConnectionsPerIP)
+            {
+                allowPlayerData->allow = false;
+                allowPlayerData->reason = "You have exceeded the maximum connections allowed to this server per IP address.";
             }
         }
         break;
@@ -95,7 +99,9 @@ void ConnectionsPerIP::Event(bz_EventData *eventData)
         {
             bz_PlayerJoinPartEventData_V1* partData = (bz_PlayerJoinPartEventData_V1*)eventData;
 
-            currentIPs[partData->record->ipAddress]--;
+            // Once a player leaves, that means that connection has been cut so we can safely
+            // decrement the number of connections an IP has
+            currentIPs[partData->record->ipAddress.c_str()]--;
         }
         break;
 
