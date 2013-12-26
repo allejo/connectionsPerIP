@@ -37,20 +37,20 @@ Compiling
 1.  Check out the BZFlag source code.  
     ```git clone -b v2_4_x https://github.com/BZFlag-Dev/bzflag-import-3.git bzflag```
 
-2.  Got into the newly checked out source code and then the plugins directory.  
-    ```cd plugins```
+2.  Go into the newly checked out source code and then the plugins directory.  
+    ```cd bzflag/plugins```
 
 3.  Create a plugin using the `newplug.sh` script.  
-    ```sh newplug.sh connectionsPerIP```
+    ```sh newplug.sh lastTankStanding```
 
-4.  Delete the newly create connectionsPerIP directory.  
-    ```rm -rf connectionsPerIP```
+4.  Delete the newly create lastTankStanding directory.  
+    ```rm -rf lastTankStanding```
 
-5.  Run a git clone of this repository from within the plugins directory. This should have created a new connectionsPerIP directory withint the plugins directory.  
-    ```git clone https://github.com/allejo/connectionsPerIP.git```
+5.  Run a git clone of this repository from within the plugins directory. This should have created a new lastTankStanding directory within the plugins directory.  
+    ```git clone https://github.com/allejo/lastTankStanding.git```
 
 6.  Instruct the build system to generate a Makefile and then compile and install the plugin.  
-    ```cd ..; ./autogen.sh; ./configure; make; make install;```
+    ```cd ../..; ./autogen.sh; ./configure; make; make install;```
 
 Server Details
 --------------
@@ -68,4 +68,4 @@ This plugin takes an optional command line parameter, the number of connections 
 License
 -------
 
-GPLv3
+[GNU General Public License v3](https://github.com/allejo/connectionsPerIP/blob/master/LICENSE.markdown)
