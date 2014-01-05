@@ -87,7 +87,7 @@ void ConnectionsPerIP::Event(bz_EventData *eventData)
             }
 
             // If an IP has reached it's limit of connections, do not allow them to join any more
-            if (currentIPs[allowPlayerData->ipAddress.c_str()] >= maxConnectionsPerIP)
+            if (currentIPs[allowPlayerData->ipAddress.c_str()] > maxConnectionsPerIP)
             {
                 allowPlayerData->allow = false;
                 allowPlayerData->reason = "You have exceeded the maximum connections allowed to this server per IP address.";
